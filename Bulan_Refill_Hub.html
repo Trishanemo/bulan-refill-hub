@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulan Refill Hub</title>
+<style>
+:root{
+  --primary:#1769aa;--primary2:#0d4f82;--bg:#f4f7fb;--card:#fff;--text:#172033;
+  --muted:#718096;--line:#e5eaf0;--success:#16875b;--warning:#c98500;--danger:#d64545;
+  --shadow:0 10px 30px rgba(20,50,80,.08);--radius:18px
+}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit} button{cursor:pointer;border:0}
+.app{display:flex;min-height:100vh}.sidebar{width:250px;background:#fff;border-right:1px solid var(--line);padding:22px 16px;position:fixed;height:100vh;z-index:20}
+.brand{display:flex;gap:11px;align-items:center;font-weight:800;font-size:20px;margin:4px 8px 28px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#1887d8,#0c568f);color:white;display:grid;place-items:center;font-size:22px}
+.nav-title{font-size:11px;color:#9aa5b1;text-transform:uppercase;margin:18px 10px 8px;font-weight:700}
+.nav button{width:100%;background:transparent;text-align:left;padding:12px 13px;border-radius:12px;color:#596577;margin:2px 0}
+.nav button:hover,.nav button.active{background:#eaf5ff;color:var(--primary);font-weight:700}
+.main{margin-left:250px;width:calc(100% - 250px);padding:24px 30px}
+.topbar{height:58px;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.search{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);padding:9px 14px;border-radius:13px;width:330px}.search input{border:0;outline:0;width:100%}
+.user{display:flex;align-items:center;gap:10px}.avatar{width:40px;height:40px;border-radius:50%;background:#dcefff;color:var(--primary);display:grid;place-items:center;font-weight:800}
+.page{display:none}.page.active{display:block}.hero{background:linear-gradient(135deg,#0c548b,#1887d8);color:#fff;border-radius:24px;padding:28px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);margin-bottom:22px}.hero h1{margin:0 0 8px;font-size:30px}.hero p{margin:0;opacity:.88}.hero .water{font-size:70px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}.stat{background:var(--card);padding:20px;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.stat small{color:var(--muted)}.stat strong{display:block;font-size:27px;margin-top:8px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:24px 0 13px}.section-head h2{margin:0;font-size:19px}
+.btn{padding:10px 15px;border-radius:11px;font-weight:700}.primary{background:var(--primary);color:#fff}.primary:hover{background:var(--primary2)}.secondary{background:#edf3f8;color:#334155}.danger{background:#fff0f0;color:var(--danger)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.station-top{display:flex;justify-content:space-between;gap:10px}.station-icon{width:46px;height:46px;border-radius:13px;background:#e8f5ff;display:grid;place-items:center;font-size:23px}.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800;background:#e9f8f1;color:var(--success)}.price{font-size:28px;font-weight:800;color:var(--primary);margin:13px 0 4px}.muted{color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;margin-top:15px}.actions .btn{flex:1}
+.toolbar{display:flex;gap:10px;margin-bottom:17px;flex-wrap:wrap}.toolbar input,.toolbar select,.form input,.form select{padding:11px 12px;border:1px solid var(--line);border-radius:11px;outline:0;background:#fff}.toolbar input{min-width:240px}
+.table-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:auto;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse}th,td{padding:14px 16px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{font-size:12px;text-transform:uppercase;color:#8a95a3}tr:last-child td{border-bottom:0}
+.empty{padding:35px;text-align:center;color:var(--muted)}
+.modal-back{position:fixed;inset:0;background:rgba(8,20,35,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal-back.show{display:flex}.modal{background:#fff;border-radius:20px;max-width:520px;width:100%;padding:23px;box-shadow:0 25px 70px rgba(0,0,0,.2)}.modal h2{margin-top:0}.close{float:right;background:#f0f3f6;width:34px;height:34px;border-radius:50%}.form{display:grid;gap:12px}.form label{font-size:13px;font-weight:700}.form input,.form select{width:100%;margin-top:5px}
+.toast{position:fixed;right:25px;bottom:25px;background:#172033;color:white;padding:13px 17px;border-radius:12px;display:none;z-index:100;box-shadow:var(--shadow)}.toast.show{display:block}
+.mobile-menu{display:none}.saving{color:var(--success);font-weight:800}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%;padding:17px}.mobile-menu{display:block;background:#fff;padding:9px 11px;border-radius:10px;border:1px solid var(--line)}.topbar{gap:10px}.search{width:auto;flex:1}.hero{padding:22px}.hero h1{font-size:23px}.hero .water{font-size:45px}.grid,.cards{grid-template-columns:1fr}.user span{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="logo">💧</div>Bulan Refill Hub</div>
+  <div class="nav-title">Main</div>
+  <div class="nav">
+    <button class="active" data-page="dashboard">⌂ Dashboard</button>
+    <button data-page="stations">💧 Water Stations</button>
+    <button data-page="compare">⚖ Price Comparison</button>
+    <button data-page="orders">🛒 My Orders</button>
+    <button data-page="groups">👥 Group Orders</button>
+  </div>
+  <div class="nav-title">Management</div>
+  <div class="nav">
+    <button data-page="customers">👤 Customers</button>
+    <button data-page="deliveries">🛵 Deliveries</button>
+    <button data-page="inventory">📦 Inventory</button>
+    <button data-page="reports">📊 Reports</button>
+  </div>
+  <div class="nav-title">Account</div>
+  <div class="nav">
+    <button onclick="openProfile()">⚙ Profile</button>
+    <button onclick="resetData()">↻ Reset Demo</button>
+  </div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+  <div class="search">⌕ <input id="globalSearch" placeholder="Search stations..." oninput="globalSearch(this.value)"></div>
+  <div class="user"><span>Trisha Mae</span><div class="avatar">TM</div></div>
+</header>
+
+<section id="dashboard" class="page active">
+  <div class="hero"><div><h1>Save more on every gallon.</h1><p>Compare water prices from local refilling stations in Bulan, Sorsogon.</p><button class="btn" style="margin-top:18px;background:white;color:#0d5b93" onclick="go('compare')">Compare Prices</button></div><div class="water">💧</div></div>
+  <div class="grid">
+    <div class="stat"><small>Lowest Price</small><strong id="lowest">₱25</strong></div>
+    <div class="stat"><small>Water Stations</small><strong id="stationCount">0</strong></div>
+    <div class="stat"><small>My Orders</small><strong id="orderCount">0</strong></div>
+    <div class="stat"><small>Gallons Ordered</small><strong id="gallonCount">0</strong></div>
+  </div>
+  <div class="section-head"><h2>Recommended Stations</h2><button class="btn secondary" onclick="go('stations')">View all</button></div>
+  <div class="cards" id="dashboardStations"></div>
+</section>
+
+<section id="stations" class="page">
+  <div class="section-head"><h2>Water Stations</h2><button class="btn primary" onclick="openStationForm()">+ Add Station</button></div>
+  <div class="toolbar"><input id="stationSearch" placeholder="Search station or location..." oninput="renderStations()"><select id="sortStations" onchange="renderStations()"><option value="price">Lowest price</option><option value="rating">Highest rating</option><option value="name">Station name</option></select></div>
+  <div class="cards" id="stationList"></div>
+</section>
+
+<section id="compare" class="page">
+  <div class="section-head"><h2>Price Comparison</h2></div>
+  <div class="card" style="margin-bottom:17px"><b>Find the cheapest option for your gallons.</b><div class="toolbar" style="margin-top:14px"><input type="number" id="compareQty" min="1" value="2" onchange="renderCompare()"></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Station</th><th>Price/Gallon</th><th>Delivery</th><th>Total</th><th>Possible Saving</th><th></th></tr></thead><tbody id="compareTable"></tbody></table></div>
+</section>
+
+<section id="orders" class="page">
+  <div class="section-head"><h2>My Orders</h2><button class="btn primary" onclick="go('compare')">+ New Order</button></div>
+  <div class="table-wrap"><table><thead><tr><th>Order</th><th>Station</th><th>Gallons</th><th>Total</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div>
+</section>
+
+<section id="groups" class="page">
+  <div class="section-head"><h2>Group Orders</h2><button class="btn primary" onclick="openGroupForm()">+ Create Group Order</button></div>
+  <div class="cards" id="groupList"></div>
+</section>
+
+<section id="customers" class="page">
+  <div class="section-head"><h2>Customers</h2></div>
+  <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Type</th><th>Location</th><th>Orders</th><th>Status</th></tr></thead><tbody id="customerTable"></tbody></table></div>
+</section>
+
+<section id="deliveries" class="page">
+  <div class="section-head"><h2>Delivery Management</h2></div>
+  <div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Station</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliveryTable"></tbody></table></div>
+</section>
+
+<section id="inventory" class="page">
+  <div class="section-head"><h2>Inventory</h2></div>
+  <div class="grid"><div class="stat"><small>Clean Gallons</small><strong>86</strong></div><div class="stat"><small>Dirty Gallons</small><strong>21</strong></div><div class="stat"><small>Available Caps</small><strong>120</strong></div><div class="stat"><small>Low Stock Items</small><strong>3</strong></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Item</th><th>Quantity</th><th>Unit</th><th>Status</th></tr></thead><tbody><tr><td>5-Gallon Containers</td><td>86</td><td>pcs</td><td><span class="badge">Good</span></td></tr><tr><td>Sealing Caps</td><td>120</td><td>pcs</td><td><span class="badge">Good</span></td></tr><tr><td>Sanitizer</td><td>4</td><td>liters</td><td><span class="badge" style="background:#fff4db;color:#a66b00">Low</span></td></tr></tbody></table></div>
+</section>
+
+<section id="reports" class="page">
+  <div class="section-head"><h2>Reports</h2></div>
+  <div class="grid"><div class="stat"><small>Sales This Month</small><strong id="sales">₱0</strong></div><div class="stat"><small>Completed Orders</small><strong id="completed">0</strong></div><div class="stat"><small>Gallons Sold</small><strong id="soldGallons">0</strong></div><div class="stat"><small>Estimated Savings</small><strong class="saving">₱0</strong></div></div>
+  <div class="card"><h3>System purpose</h3><p class="muted">This system helps students, dormers, and boarding-house tenants compare nearby water prices and coordinate purchases to reduce unnecessary water and delivery expenses.</p></div>
+</section>
+</main>
+</div>
+
+<div class="modal-back" id="modalBack"><div class="modal"><button class="close" onclick="closeModal()">×</button><div id="modalContent"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const key="bulan_refill_demo_v1";
+let stations=[
+{id:1,name:"Bulan Fresh Water Station",location:"Zone 8, Bulan",price:25,delivery:5,rating:4.8},
+{id:2,name:"CleanDrop Refilling Station",location:"Poblacion, Bulan",price:30,delivery:5,rating:4.7},
+{id:3,name:"AquaSave Water Station",location:"Zone 6, Bulan",price:28,delivery:10,rating:4.6},
+{id:4,name:"Blue Spring Refilling",location:"Near Bulan Campus",price:35,delivery:0,rating:4.9},
+{id:5,name:"PureDrop Water Station",location:"Zone 4, Bulan",price:27,delivery:8,rating:4.5}
+];
+let orders=[];
+let groups=[
+{id:1,name:"Boarding House Group A",members:4,gallons:8,status:"Open",station:"Bulan Fresh Water Station"}
+];
+
+function load(){try{let x=JSON.parse(localStorage.getItem(key));if(x){stations=x.stations||stations;orders=x.orders||[];groups=x.groups||groups}}catch(e){}}
+function save(){localStorage.setItem(key,JSON.stringify({stations,orders,groups}))}
+function money(n){return "₱"+Number(n).toLocaleString("en-PH",{minimumFractionDigits:0})}
+function toast(m){let t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function go(page){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.getElementById(page).classList.add("active");
+ document.querySelectorAll(".nav button[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
+ if(page==="dashboard")renderDashboard(); if(page==="stations")renderStations(); if(page==="compare")renderCompare();
+ if(page==="orders")renderOrders(); if(page==="groups")renderGroups(); if(page==="customers")renderCustomers();
+ if(page==="deliveries")renderDeliveries(); if(page==="reports")renderReports();
+ document.getElementById("sidebar").classList.remove("open");
+}
+function stationCard(s){
+ return `<div class="card"><div class="station-top"><div class="station-icon">💧</div><span class="badge">Open</span></div>
+ <h3>${s.name}</h3><div class="muted">📍 ${s.location}</div><div class="price">${money(s.price)} <small style="font-size:12px;color:#718096">/ gallon</small></div>
+ <div class="muted">⭐ ${s.rating} rating · ${s.delivery?money(s.delivery)+" delivery":"Free delivery"}</div>
+ <div class="actions"><button class="btn secondary" onclick="viewStation(${s.id})">Details</button><button class="btn primary" onclick="openOrder(${s.id})">Order</button></div></div>`;
+}
+function renderDashboard(){
+ document.getElementById("lowest").textContent=money(Math.min(...stations.map(s=>s.price)));
+ document.getElementById("stationCount").textContent=stations.length;
+ document.getElementById("orderCount").textContent=orders.length;
+ document.getElementById("gallonCount").textContent=orders.reduce((a,o)=>a+o.qty,0);
+ document.getElementById("dashboardStations").innerHTML=stations.slice().sort((a,b)=>a.price-b.price).slice(0,3).map(stationCard).join("");
+}
+function renderStations(){
+ let q=(document.getElementById("stationSearch")?.value||"").toLowerCase(),sort=document.getElementById("sortStations")?.value||"price";
+ let arr=stations.filter(s=>(s.name+" "+s.location).toLowerCase().includes(q));
+ arr.sort((a,b)=>sort==="rating"?b.rating-a.rating:sort==="name"?a.name.localeCompare(b.name):a.price-b.price);
+ document.getElementById("stationList").innerHTML=arr.length?arr.map(stationCard).join(""):`<div class="empty">No stations found.</div>`;
+}
+function renderCompare(){
+ let q=Math.max(1,Number(document.getElementById("compareQty").value)||1),min=Math.min(...stations.map(s=>s.price*q+s.delivery));
+ document.getElementById("compareTable").innerHTML=stations.slice().sort((a,b)=>(a.price*q+a.delivery)-(b.price*q+b.delivery)).map(s=>{
+ let total=s.price*q+s.delivery,save=Math.max(0,total-min);
+ return `<tr><td><b>${s.name}</b><br><span class="muted">${s.location}</span></td><td>${money(s.price)}</td><td>${s.delivery?money(s.delivery):"Free"}</td><td><b>${money(total)}</b></td><td class="saving">${save?money(save):"Best price"}</td><td><button class="btn primary" onclick="openOrder(${s.id})">Order</button></td></tr>`
+ }).join("");
+}
+function openOrder(id){
+ let s=stations.find(x=>x.id===id);
+ showModal(`<h2>Order from ${s.name}</h2><div class="form"><label>Number of gallons<input id="orderQty" type="number" min="1" value="2" oninput="updateOrder(${s.id})"></label><label>Delivery option<select id="deliveryOpt" onchange="updateOrder(${s.id})"><option value="delivery">Delivery (${s.delivery?money(s.delivery):"FREE"})</option><option value="pickup">Pickup</option></select></label><label>Address<input id="orderAddress" value="Bulan, Sorsogon"></label><div class="card" style="box-shadow:none;background:#f7fafc"><b>Total: <span id="orderTotal">${money(s.price*2+s.delivery)}</span></b></div><button class="btn primary" onclick="placeOrder(${s.id})">Place Order</button></div>`);
+}
+function updateOrder(id){let s=stations.find(x=>x.id===id),q=Number(document.getElementById("orderQty").value)||1,del=document.getElementById("deliveryOpt").value==="delivery"?s.delivery:0;document.getElementById("orderTotal").textContent=money(q*s.price+del)}
+function placeOrder(id){
+ let s=stations.find(x=>x.id===id),q=Math.max(1,Number(document.getElementById("orderQty").value)||1),del=document.getElementById("deliveryOpt").value==="delivery"?s.delivery:0;
+ let o={id:"ORD-"+Date.now().toString().slice(-6),station:s.name,stationId:id,qty:q,total:q*s.price+del,status:"Pending",address:document.getElementById("orderAddress").value};
+ orders.unshift(o);save();closeModal();toast("Order placed successfully!");go("orders");
+}
+function renderOrders(){
+ document.getElementById("ordersTable").innerHTML=orders.length?orders.map(o=>`<tr><td><b>${o.id}</b></td><td>${o.station}</td><td>${o.qty}</td><td>${money(o.total)}</td><td><span class="badge">${o.status}</span></td><td><button class="btn secondary" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join(""):`<tr><td colspan="6"><div class="empty">No orders yet.</div></td></tr>`;
+}
+function viewOrder(id){let o=orders.find(x=>x.id===id);showModal(`<h2>${o.id}</h2><p><b>Station:</b> ${o.station}</p><p><b>Gallons:</b> ${o.qty}</p><p><b>Total:</b> ${money(o.total)}</p><p><b>Address:</b> ${o.address}</p><p><b>Status:</b> <span class="badge">${o.status}</span></p><div class="actions"><button class="btn primary" onclick="advanceOrder('${o.id}')">Update Status</button><button class="btn danger" onclick="cancelOrder('${o.id}')">Cancel</button></div>`)}
+function advanceOrder(id){let o=orders.find(x=>x.id===id),flow=["Pending","Confirmed","Preparing","Out for delivery","Completed"];let i=flow.indexOf(o.status);o.status=flow[Math.min(i+1,flow.length-1)];save();closeModal();toast("Order status updated");renderOrders();renderDeliveries();renderReports();renderDashboard()}
+function cancelOrder(id){let o=orders.find(x=>x.id===id);o.status="Cancelled";save();closeModal();toast("Order cancelled");renderOrders();renderDashboard()}
+function viewStation(id){let s=stations.find(x=>x.id===id);showModal(`<h2>${s.name}</h2><p>📍 ${s.location}</p><p>⭐ ${s.rating} rating</p><p class="price">${money(s.price)} / gallon</p><p class="muted">${s.delivery?money(s.delivery)+" delivery fee":"Free delivery"}</p><button class="btn primary" style="width:100%" onclick="openOrder(${s.id})">Order Water</button>`)}
+function openStationForm(){
+ showModal(`<h2>Add Water Station</h2><div class="form"><label>Station Name<input id="sn"></label><label>Location<input id="sl"></label><label>Price per gallon<input id="sp" type="number" min="1"></label><label>Delivery fee<input id="sd" type="number" min="0" value="0"></label><label>Rating<input id="sr" type="number" min="1" max="5" step=".1" value="4.5"></label><button class="btn primary" onclick="addStation()">Save Station</button></div>`);
+}
+function addStation(){let s={id:Date.now(),name:document.getElementById("sn").value.trim(),location:document.getElementById("sl").value.trim(),price:Number(document.getElementById("sp").value),delivery:Number(document.getElementById("sd").value),rating:Number(document.getElementById("sr").value)};if(!s.name||!s.location||!s.price){toast("Please complete the form");return}stations.push(s);save();closeModal();toast("Station added");renderStations();renderDashboard()}
+function openGroupForm(){showModal(`<h2>Create Group Order</h2><div class="form"><label>Group name<input id="gn" placeholder="e.g. Boarding House Group B"></label><label>Number of members<input id="gm" type="number" min="2" value="3"></label><label>Total gallons<input id="gg" type="number" min="1" value="6"></label><label>Water station<select id="gs">${stations.map(s=>`<option value="${s.name}">${s.name}</option>`).join("")}</select></label><button class="btn primary" onclick="createGroup()">Create Group</button></div>`)}
+function createGroup(){let g={id:Date.now(),name:document.getElementById("gn").value,members:Number(document.getElementById("gm").value),gallons:Number(document.getElementById("gg").value),status:"Open",station:document.getElementById("gs").value};groups.push(g);save();closeModal();toast("Group order created");renderGroups()}
+function renderGroups(){document.getElementById("groupList").innerHTML=groups.map(g=>`<div class="card"><span class="badge">${g.status}</span><h3>${g.name}</h3><p class="muted">${g.members} members · ${g.gallons} gallons</p><p><b>Station:</b> ${g.station}</p><button class="btn primary" onclick="joinGroup(${g.id})">Join Group</button></div>`).join("")}
+function joinGroup(id){let g=groups.find(x=>x.id===id);g.members++;g.gallons++;save();toast("You joined the group order");renderGroups()}
+function renderCustomers(){document.getElementById("customerTable").innerHTML=`<tr><td><b>Trisha Mae</b></td><td>Student</td><td>Bulan, Sorsogon</td><td>${orders.length}</td><td><span class="badge">Active</span></td></tr><tr><td>INT-01</td><td>Boarding-house tenant</td><td>Bulan</td><td>4</td><td><span class="badge">Active</span></td></tr><tr><td>INT-02</td><td>Student</td><td>Bulan</td><td>3</td><td><span class="badge">Active</span></td></tr>`}
+function renderDeliveries(){document.getElementById("deliveryTable").innerHTML=orders.length?orders.map(o=>`<tr><td>${o.id}</td><td>Trisha Mae</td><td>${o.station}</td><td><span class="badge">${o.status}</span></td><td><button class="btn secondary" onclick="advanceOrder('${o.id}')">Next Status</button></td></tr>`).join(""):`<tr><td colspan="5"><div class="empty">No deliveries.</div></td></tr>`}
+function renderReports(){let sales=orders.filter(o=>o.status==="Completed").reduce((a,o)=>a+o.total,0),g=orders.filter(o=>o.status==="Completed").reduce((a,o)=>a+o.qty,0);document.getElementById("sales").textContent=money(sales);document.getElementById("completed").textContent=orders.filter(o=>o.status==="Completed").length;document.getElementById("soldGallons").textContent=g}
+function globalSearch(q){if(q.trim()){go("stations");document.getElementById("stationSearch").value=q;renderStations()}}
+function showModal(content){document.getElementById("modalContent").innerHTML=content;document.getElementById("modalBack").classList.add("show")}
+function closeModal(){document.getElementById("modalBack").classList.remove("show")}
+function openProfile(){showModal(`<h2>Profile</h2><p><b>Name:</b> Trisha Mae</p><p><b>Role:</b> Student / Customer</p><p><b>Location:</b> Bulan, Sorsogon</p><button class="btn primary" style="width:100%" onclick="closeModal()">Close</button>`)}
+function toggleSidebar(){document.getElementById("sidebar").classList.toggle("open")}
+function resetData(){if(confirm("Reset all demo orders and stations?")){localStorage.removeItem(key);location.reload()}}
+document.querySelectorAll(".nav button[data-page]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
+load();renderDashboard();renderStations();renderCompare();renderOrders();renderGroups();renderCustomers();renderDeliveries();renderReports();
+</script>
+</body>
+</html>
